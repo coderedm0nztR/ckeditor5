@@ -1,3 +1,4 @@
+##This is a custom build of CKEditor5 to include additional plugins which aren't typically included.
 CKEditor 5 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20CKEditor%205%20on%20GitHub&url=https%3A%2F%2Fgithub.com%2Fckeditor%2Fckeditor5)
 ===================================
 
