@@ -1,6 +1,6 @@
 {
-  "name": "ckeditor5-build-classic-with-extra-plugins",
-  "version": "1.0.0",
+  "name": "@coderedm0nztr/ckeditor5-build-classic-extra-plugins",
+  "version": "1.0.1",
   "description": "The classic editor build of CKEditor 5 – with additional plugins pre-installed",
   "keywords": [
     "ckeditor5-build",
@@ -65,10 +65,10 @@
     "node": ">=12.0.0",
     "npm": ">=5.7.1"
   },
-  "author": "coderedm0nztR",
+  "author": "coderedm0nztr",
   "license": "MIT",
-  "homepage": "https://ckeditor.com/ckeditor-5",
-  "bugs": "https://github.com/ckeditor/ckeditor5/issues",
+  "homepage": "https://github.com/coderedm0nztR/ckeditor5",
+  "bugs": "https://github.com/coderedm0nztR/ckeditor5/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/coderedm0nztR/ckeditor5",
