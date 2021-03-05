@@ -30,8 +30,64 @@ import Table from '@ckeditor/ckeditor5-table/src/table';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import CloudServices from '@ckeditor/ckeditor5-cloud-services/src/cloudservices';
+import Mention from '@ckeditor/ckeditor5-mention/src/mention';
 
 export default class ClassicEditor extends ClassicEditorBase {}
+
+/*
+ * This plugin customizes the way mentions are handled in the editor model and data.
+ * Instead of a classic <span class="mention"></span>,
+ */
+const MentionLinks = editor => {
+	// The upcast converter will convert a view
+	//
+	//		<span id="..." class="mention" data-mention="...">...</a>
+	//
+	// element to the model "mention" text attribute.
+	editor.conversion.for( 'upcast' ).elementToAttribute( {
+		view: {
+			name: 'span',
+			key: 'data-mention',
+			classes: 'mention',
+			attributes: {
+				id: true
+			}
+		},
+		model: {
+			key: 'mention',
+			value: viewItem => editor.plugins.get( 'Mention' ).toMentionAttribute( viewItem )
+		},
+		converterPriority: 'high'
+	} );
+
+	// Downcast the model "mention" text attribute to a view
+	//
+	//		<span id="..." class="mention" data-mention="...">...</a>
+	//
+	// element.
+	editor.conversion.for( 'downcast' ).attributeToElement( {
+		model: 'mention',
+		view: ( modelAttributeValue, { writer } ) => {
+			// Do not convert empty attributes (lack of value means no mention).
+			if ( !modelAttributeValue ) {
+				return;
+			}
+			const id = modelAttributeValue.id;
+
+			return writer.createAttributeElement( 'span', {
+				class: 'mention',
+				'data-mention': modelAttributeValue.value,
+				id
+			}, {
+				// Make mention attribute to be wrapped by other attribute elements.
+				priority: 20,
+				// Prevent merging mentions together.
+				id: modelAttributeValue.id
+			} );
+		},
+		converterPriority: 'high'
+	} );
+};
 
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
@@ -58,11 +114,15 @@ ClassicEditor.builtinPlugins = [
 	PasteFromOffice,
 	Table,
 	TableToolbar,
-	TextTransformation
+	TextTransformation,
+	Mention
 ];
 
 // Editor configuration.
 ClassicEditor.defaultConfig = {
+	extraPlugins: [
+		MentionLinks
+	],
 	toolbar: {
 		items: [
 			'heading',
