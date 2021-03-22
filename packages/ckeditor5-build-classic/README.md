@@ -11,6 +11,7 @@ The classic editor build for CKEditor 5, with additional plugins pre-installed. 
 
 
 * Mentions
+* Font
 * TBD
 
 

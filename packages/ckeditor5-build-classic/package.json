@@ -1,6 +1,6 @@
 {
   "name": "@coderedm0nztr/ckeditor5-build-classic-extra-plugins",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "The classic editor build of CKEditor 5 – with additional plugins pre-installed",
   "keywords": [
     "ckeditor5-build",
@@ -47,7 +47,8 @@
     "@ckeditor/ckeditor5-paste-from-office": "^26.0.0",
     "@ckeditor/ckeditor5-table": "^26.0.0",
     "@ckeditor/ckeditor5-typing": "^26.0.0",
-    "@ckeditor/ckeditor5-mention": "^26.0.0"
+    "@ckeditor/ckeditor5-mention": "^26.0.0",
+    "@ckeditor/ckeditor5-font": "^26.0.0"
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-core": "^26.0.0",
