@@ -7,12 +7,14 @@ The classic editor build for CKEditor 5, with additional plugins pre-installed. 
 ![CKEditor 5 classic editor build screenshot](https://c.cksource.com/a/1/img/npm/ckeditor5-build-classic.png)
 
 
-## Extra Plugins Pre-included
+## Extra Plugins Pre-included (which aren't already included in the defualt classic editor build)
 
 
 * Mentions
 * Font
-* TBD
+* TableProperties
+* TableCellProperties
+* (more TBD...)
 
 
 ## Documentation

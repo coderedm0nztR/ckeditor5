@@ -28,6 +28,8 @@ import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefromoffice';
 import Table from '@ckeditor/ckeditor5-table/src/table';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
+import TableCellProperties from '@ckeditor/ckeditor5-table/src/tablecellproperties';
+import TableProperties from '@ckeditor/ckeditor5-table/src/tableproperties';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import CloudServices from '@ckeditor/ckeditor5-cloud-services/src/cloudservices';
 import Mention from '@ckeditor/ckeditor5-mention/src/mention';
@@ -63,6 +65,8 @@ ClassicEditor.builtinPlugins = [
 	PasteFromOffice,
 	Table,
 	TableToolbar,
+	TableCellProperties,
+	TableProperties,
 	TextTransformation,
 	Mention,
 	FontSize,
@@ -111,7 +115,9 @@ ClassicEditor.defaultConfig = {
 		contentToolbar: [
 			'tableColumn',
 			'tableRow',
-			'mergeTableCells'
+			'mergeTableCells',
+			'tableProperties',
+			'tableCellProperties'
 		]
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.

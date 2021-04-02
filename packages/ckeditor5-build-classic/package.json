@@ -1,6 +1,6 @@
 {
   "name": "@coderedm0nztr/ckeditor5-build-classic-extra-plugins",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "The classic editor build of CKEditor 5 – with additional plugins pre-installed",
   "keywords": [
     "ckeditor5-build",
