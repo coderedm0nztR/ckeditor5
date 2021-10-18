@@ -95,9 +95,9 @@ export default class PluginCollection {
 	 * Gets the plugin instance by its constructor or name.
 	 *
 	 *		// Check if 'Clipboard' plugin was loaded.
-	 *		if ( editor.plugins.has( 'Clipboard' ) ) {
+	 *		if ( editor.plugins.has( 'ClipboardPipeline' ) ) {
 	 *			// Get clipboard plugin instance
-	 *			const clipboard = editor.plugins.get( 'Clipboard' );
+	 *			const clipboard = editor.plugins.get( 'ClipboardPipeline' );
 	 *
 	 *			this.listenTo( clipboard, 'inputTransformation', ( evt, data ) => {
 	 *				// Do something on clipboard input.
@@ -144,9 +144,9 @@ export default class PluginCollection {
 	 * Checks if a plugin is loaded.
 	 *
 	 *		// Check if the 'Clipboard' plugin was loaded.
-	 *		if ( editor.plugins.has( 'Clipboard' ) ) {
+	 *		if ( editor.plugins.has( 'ClipboardPipeline' ) ) {
 	 *			// Now use the clipboard plugin instance:
-	 *			const clipboard = editor.plugins.get( 'Clipboard' );
+	 *			const clipboard = editor.plugins.get( 'ClipboardPipeline' );
 	 *
 	 *			// ...
 	 *		}
@@ -324,7 +324,7 @@ export default class PluginCollection {
 				 *
 				 * Soft requirements were introduced in version 26.0.0. If you happen to stumble upon this error
 				 * when upgrading to version 26.0.0, read also the
-				 * {@glink builds/guides/migration/migration-to-26.0.0 Migration to 26.0.0} guide.
+				 * {@glink builds/guides/migration/migration-to-26 Migration to 26.0.0} guide.
 				 *
 				 * @error plugincollection-soft-required
 				 * @param {String} missingPlugin The name of the required plugin.

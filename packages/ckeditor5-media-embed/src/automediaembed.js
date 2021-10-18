@@ -10,13 +10,14 @@
 import { Plugin } from 'ckeditor5/src/core';
 import { LiveRange, LivePosition } from 'ckeditor5/src/engine';
 import { Clipboard } from 'ckeditor5/src/clipboard';
+import { Delete } from 'ckeditor5/src/typing';
 import { Undo } from 'ckeditor5/src/undo';
 import { global } from 'ckeditor5/src/utils';
 
 import MediaEmbedEditing from './mediaembedediting';
 import { insertMedia } from './utils';
 
-const URL_REGEXP = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=%]+$/;
+const URL_REGEXP = /^(?:http(s)?:\/\/)?[\w-]+\.[\w-.~:/?#[\]@!$&'()*+,;=%]+$/;
 
 /**
  * The auto-media embed plugin. It recognizes media links in the pasted content and embeds
@@ -29,7 +30,7 @@ export default class AutoMediaEmbed extends Plugin {
 	 * @inheritDoc
 	 */
 	static get requires() {
-		return [ Clipboard, Undo ];
+		return [ Clipboard, Delete, Undo ];
 	}
 
 	/**
@@ -74,7 +75,7 @@ export default class AutoMediaEmbed extends Plugin {
 		// We need to listen on `Clipboard#inputTransformation` because we need to save positions of selection.
 		// After pasting, the content between those positions will be checked for a URL that could be transformed
 		// into media.
-		this.listenTo( editor.plugins.get( Clipboard ), 'inputTransformation', () => {
+		this.listenTo( editor.plugins.get( 'ClipboardPipeline' ), 'inputTransformation', () => {
 			const firstRange = modelDocument.selection.getFirstRange();
 
 			const leftLivePosition = LivePosition.fromPosition( firstRange.start );
@@ -174,6 +175,8 @@ export default class AutoMediaEmbed extends Plugin {
 				this._positionToInsert.detach();
 				this._positionToInsert = null;
 			} );
+
+			editor.plugins.get( 'Delete' ).requestUndoOnBackspace();
 		}, 100 );
 	}
 }

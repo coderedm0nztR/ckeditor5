@@ -4,9 +4,15 @@ category: builds-integration-frameworks
 order: 40
 ---
 
+{@snippet builds/frameworks/framework-integration}
+
 # Rich text editor component for Vue.js 2.x
 
-[![npm version](https://badge.fury.io/js/%40ckeditor%2Fckeditor5-vue2.svg)](https://www.npmjs.com/package/@ckeditor/ckeditor5-vue2)
+<p>
+	<a href="https://www.npmjs.com/package/@ckeditor/ckeditor5-vue2" target="_blank" rel="noopener">
+		<img src="https://badge.fury.io/js/%40ckeditor%2Fckeditor5-vue2.svg" alt="npm version" loading="lazy">
+	</a>
+</p>
 
 <info-box>
 	**Important**: This guide is about the CKEditor 5 integration with Vue.js 2.x. To learn more about the integration with Vue.js 3+, check out the {@link builds/guides/frameworks/vuejs-v3 "Rich text editor component for Vue.js 3+"} guide.
@@ -277,7 +283,7 @@ module.exports = {
 
 ### Using the editor from source
 
-Having configured `vue.config.js`, you can choose the building blocks of your editor. Install the packages necessary for your integration:
+Having configured `vue.config.js`, you can choose the building blocks of your editor. Install the packages necessary for your integration, but please remember that all packages (excluding `@ckeditor/ckeditor5-dev-*` and `@ckeditor/ckeditor5-vue2`) {@link builds/guides/integration/installing-plugins#requirements must have the same version as the base editor package}.
 
 ```bash
 npm install --save \

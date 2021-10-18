@@ -12,9 +12,10 @@ import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import BoldEditing from '@ckeditor/ckeditor5-basic-styles/src/bold/boldediting';
 import ItalicEditing from '@ckeditor/ckeditor5-basic-styles/src/italic/italicediting';
 import Clipboard from '@ckeditor/ckeditor5-clipboard/src/clipboard';
+import ClipboardPipeline from '@ckeditor/ckeditor5-clipboard/src/clipboardpipeline';
 import Enter from '@ckeditor/ckeditor5-enter/src/enter';
 import DomEventData from '@ckeditor/ckeditor5-engine/src/view/observer/domeventdata';
-import ImageEditing from '@ckeditor/ckeditor5-image/src/image/imageediting';
+import ImageBlockEditing from '@ckeditor/ckeditor5-image/src/image/imageblockediting';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import Input from '@ckeditor/ckeditor5-typing/src/input';
 import Delete from '@ckeditor/ckeditor5-typing/src/delete';
@@ -35,7 +36,7 @@ describe( 'LinkEditing', () => {
 		document.body.appendChild( element );
 
 		editor = await ClassicTestEditor.create( element, {
-			plugins: [ Paragraph, LinkEditing, Enter ],
+			plugins: [ Paragraph, LinkEditing, Enter, Clipboard ],
 			link: {
 				decorators: {
 					isExternal: {
@@ -710,6 +711,11 @@ describe( 'LinkEditing', () => {
 						attributes: {
 							class: 'mail-url'
 						}
+					}, {
+						url: 'ftp://example.com',
+						attributes: {
+							style: 'background:blue;color:yellow;'
+						}
 					}
 				];
 
@@ -738,8 +744,14 @@ describe( 'LinkEditing', () => {
 								isMail: {
 									mode: 'automatic',
 									callback: url => url.startsWith( 'mailto:' ),
-									attributes: {
-										class: 'mail-url'
+									classes: 'mail-url'
+								},
+								isFile: {
+									mode: 'automatic',
+									callback: url => url.startsWith( 'ftp' ),
+									styles: {
+										color: 'yellow',
+										background: 'blue'
 									}
 								}
 							}
@@ -773,7 +785,7 @@ describe( 'LinkEditing', () => {
 				} );
 
 				it( 'stores decorators in LinkCommand#automaticDecorators collection', () => {
-					expect( editor.commands.get( 'link' ).automaticDecorators.length ).to.equal( 3 );
+					expect( editor.commands.get( 'link' ).automaticDecorators.length ).to.equal( 4 );
 				} );
 			} );
 		} );
@@ -843,7 +855,8 @@ describe( 'LinkEditing', () => {
 			it( 'should upcast attributes from initial data', async () => {
 				editor = await ClassicTestEditor.create( element, {
 					initialData: '<p><a href="url" target="_blank" rel="noopener noreferrer" download="file">Foo</a>' +
-						'<a href="example.com" download="file">Bar</a></p>',
+						'<a href="example.com" class="file" style="text-decoration:underline;">Bar</a>' +
+						'<a href="example.com" download="file">Baz</a></p>',
 					plugins: [ Paragraph, LinkEditing, Enter ],
 					link: {
 						decorators: {
@@ -861,6 +874,14 @@ describe( 'LinkEditing', () => {
 								attributes: {
 									download: 'file'
 								}
+							},
+							isFile: {
+								mode: 'manual',
+								label: 'File',
+								classes: 'file',
+								styles: {
+									'text-decoration': 'underline'
+								}
 							}
 						}
 					}
@@ -871,7 +892,8 @@ describe( 'LinkEditing', () => {
 				expect( getModelData( model, { withoutSelection: true } ) ).to.equal(
 					'<paragraph>' +
 						'<$text linkHref="url" linkIsDownloadable="true" linkIsExternal="true">Foo</$text>' +
-						'<$text linkHref="example.com" linkIsDownloadable="true">Bar</$text>' +
+						'<$text linkHref="example.com" linkIsFile="true">Bar</$text>' +
+						'<$text linkHref="example.com" linkIsDownloadable="true">Baz</$text>' +
 					'</paragraph>'
 				);
 
@@ -1092,8 +1114,13 @@ describe( 'LinkEditing', () => {
 			expect( getModelData( model ) ).to.equal( '<paragraph><$text bold="true">Bar[]</$text></paragraph>' );
 		} );
 
-		it( 'should remove manual decorators', () => {
-			setModelData( model, '<paragraph><$text linkIsFoo="true" linkIsBar="true" linkHref="url">Bar[]</$text></paragraph>' );
+		it( 'should remove all `link*` attributes', () => {
+			allowLinkTarget( editor );
+
+			setModelData(
+				model,
+				'<paragraph><$text linkIsFoo="true" linkTarget="_blank" linkHref="https://ckeditor.com">Bar[]</$text></paragraph>'
+			);
 
 			editor.editing.view.document.fire( 'mousedown' );
 			editor.editing.view.document.fire( 'selectionChange', {
@@ -1101,15 +1128,29 @@ describe( 'LinkEditing', () => {
 			} );
 
 			expect( getModelData( model ) ).to.equal(
-				'<paragraph><$text linkHref="url" linkIsBar="true" linkIsFoo="true">Bar</$text>[]</paragraph>'
+				'<paragraph><$text linkHref="https://ckeditor.com" linkIsFoo="true" linkTarget="_blank">Bar</$text>[]</paragraph>'
 			);
 
 			editor.execute( 'input', { text: 'Foo' } );
 
 			expect( getModelData( model ) ).to.equal(
-				'<paragraph><$text linkHref="url" linkIsBar="true" linkIsFoo="true">Bar</$text>Foo[]</paragraph>'
+				'<paragraph><$text linkHref="https://ckeditor.com" linkIsFoo="true" linkTarget="_blank">Bar</$text>Foo[]</paragraph>'
 			);
 		} );
+
+		// Based on `packages/ckeditor5-engine/docs/_snippets/framework/extending-content-allow-link-target.js`.
+		// And covers #8462.
+		function allowLinkTarget( editor ) {
+			editor.model.schema.extend( '$text', { allowAttributes: 'linkTarget' } );
+
+			editor.conversion.for( 'downcast' ).attributeToElement( {
+				model: 'linkTarget',
+				view: ( attributeValue, { writer } ) => {
+					return writer.createAttributeElement( 'a', { target: attributeValue }, { priority: 5 } );
+				},
+				converterPriority: 'low'
+			} );
+		}
 	} );
 
 	// https://github.com/ckeditor/ckeditor5/issues/4762
@@ -1118,7 +1159,7 @@ describe( 'LinkEditing', () => {
 
 		beforeEach( async () => {
 			editor = await ClassicTestEditor.create( element, {
-				plugins: [ Paragraph, LinkEditing, Enter, BoldEditing, ItalicEditing, ImageEditing ],
+				plugins: [ Paragraph, LinkEditing, Enter, BoldEditing, ItalicEditing, ImageBlockEditing ],
 				link: {
 					decorators: {
 						isFoo: {
@@ -1152,8 +1193,8 @@ describe( 'LinkEditing', () => {
 			await editor.destroy();
 		} );
 
-		it( 'should require Clipboard plugin', () => {
-			expect( LinkEditing.requires.includes( Clipboard ) ).to.equal( true );
+		it( 'should require ClipboardPipeline plugin', () => {
+			expect( LinkEditing.requires.includes( ClipboardPipeline ) ).to.equal( true );
 		} );
 
 		it( 'should require Input plugin', () => {
@@ -1334,7 +1375,7 @@ describe( 'LinkEditing', () => {
 
 		it( 'should not preserve anything if selected an element instead of text', () => {
 			setModelData( model,
-				'[<image src="/assets/sample.png"></image>]'
+				'[<imageBlock src="/assets/sample.png"></imageBlock>]'
 			);
 
 			editor.execute( 'input', {

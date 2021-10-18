@@ -18,8 +18,10 @@ ClassicEditor
 				{ model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
 			]
 		},
-		toolbar: {
-			viewportTopOffset: window.getViewportTopOffsetConfig()
+		ui: {
+			viewportOffset: {
+				top: window.getViewportTopOffsetConfig()
+			}
 		}
 	} )
 	.then( editor => {
@@ -30,7 +32,10 @@ ClassicEditor
 				editor.ui.view.toolbar, item => item.buttonView && item.buttonView.label && item.buttonView.label.startsWith( 'Heading' )
 			),
 			text: 'Click to change heading level.',
-			editor
+			editor,
+			tippyOptions: {
+				placement: 'bottom-start'
+			}
 		} );
 	} )
 	.catch( err => {

@@ -9,6 +9,7 @@
 
 import Observer from '@ckeditor/ckeditor5-engine/src/view/observer/observer';
 import DomEventData from '@ckeditor/ckeditor5-engine/src/view/observer/domeventdata';
+import BubblingEventInfo from '@ckeditor/ckeditor5-engine/src/view/observer/bubblingeventinfo';
 import { keyCodes } from '@ckeditor/ckeditor5-utils/src/keyboard';
 import env from '@ckeditor/ckeditor5-utils/src/env';
 
@@ -18,6 +19,9 @@ import env from '@ckeditor/ckeditor5-utils/src/env';
  * @extends module:engine/view/observer/observer~Observer
  */
 export default class DeleteObserver extends Observer {
+	/**
+	 * @inheritDoc
+	 */
 	constructor( view ) {
 		super( view );
 
@@ -80,15 +84,13 @@ export default class DeleteObserver extends Observer {
 		}
 
 		function fireViewDeleteEvent( originalEvent, domEvent, deleteData ) {
-			// Save the event object to check later if it was stopped or not.
-			let event;
-			document.once( 'delete', evt => ( event = evt ), { priority: Number.POSITIVE_INFINITY } );
+			const event = new BubblingEventInfo( document, 'delete', document.selection.getFirstRange() );
 
-			document.fire( 'delete', new DomEventData( document, domEvent, deleteData ) );
+			document.fire( event, new DomEventData( document, domEvent, deleteData ) );
 
 			// Stop the original event if `delete` event was stopped.
 			// https://github.com/ckeditor/ckeditor5/issues/753
-			if ( event && event.stop.called ) {
+			if ( event.stop.called ) {
 				originalEvent.stop();
 			}
 		}
@@ -109,7 +111,7 @@ export default class DeleteObserver extends Observer {
  * @event module:engine/view/document~Document#event:delete
  * @param {module:engine/view/observer/domeventdata~DomEventData} data
  * @param {'forward'|'delete'} data.direction The direction in which the deletion should happen.
- * @param {'character'|'word'} data.unit The "amount" of content that should be deleted.
+ * @param {'character'|'codePoint'|'word'} data.unit The "amount" of content that should be deleted.
  * @param {Number} data.sequence A number describing which subsequent delete event it is without the key being released.
  * If it's 2 or more it means that the key was pressed and hold.
  * @param {module:engine/view/selection~Selection} [data.selectionToRemove] View selection which content should be removed. If not set,
